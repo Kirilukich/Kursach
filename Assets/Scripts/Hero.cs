@@ -1,27 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class Hero : MonoBehaviour
 {
     [SerializeField] private float speed = 3f;
     [SerializeField] private int lives = 5;
     [SerializeField] private float jumpForce = 15f;
-    [SerializeField] private GameObject gameOverMenu;
-    [SerializeField] private GameObject gameWinMenu;
-    [SerializeField] private TextMeshProUGUI textCoins;
     private bool isGrounded = false;
-    public int coins = 0;
+
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
-    private Animator _animator;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        _animator = transform.GetChild(0).GetComponent<Animator>();
     }
 
     private void FixedUpdate()
@@ -32,13 +26,7 @@ public class Hero : MonoBehaviour
     private void Update()
     {
         if (Input.GetButton("Horizontal"))
-        {
             Run();
-        }
-        else
-        {
-            _animator.Play("Idle");
-        }
         if (isGrounded && Input.GetButtonDown("Jump"))
             Jump();
     }
@@ -50,10 +38,6 @@ public class Hero : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, transform.position + dir, speed * Time.deltaTime);
 
         sprite.flipX = dir.x < 0.0f;
-        if (dir != Vector3.zero)
-        {
-            _animator.Play("Run");
-        }
     }
 
     private void Jump()
@@ -67,28 +51,4 @@ public class Hero : MonoBehaviour
         isGrounded = collider.Length > 1;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.tag == "Coin")
-        {
-            coins++;
-            textCoins.text = "Coins: " + coins.ToString();
-            other.gameObject.SetActive(false);
-
-            if (coins == 1)
-            {
-                Debug.Log("coin");
-                gameObject.SetActive(false);
-                gameWinMenu.SetActive(true);
-            }
-
-        }
-
-        else if (other.gameObject.tag == "Enemy")
-        {
-            gameObject.SetActive(false);
-            Debug.Log("enemy");
-            gameOverMenu.SetActive(true);
-        }
-    }
 }
